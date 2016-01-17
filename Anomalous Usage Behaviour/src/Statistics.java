@@ -18,6 +18,7 @@ public class Statistics {
 				}else if(detected[i][j]==0 && real[i][j]==0){
 					TN++;
 				}else if(detected[i][j]==1 && real[i][j]==0){
+					//System.out.println("i="+i+"j="+j);
 					FP++;
 				}else if(detected[i][j]==0 && real[i][j]==1){
 					FN++;

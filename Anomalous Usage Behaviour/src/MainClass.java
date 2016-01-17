@@ -147,27 +147,29 @@ public class MainClass {
 		return summary;
 	}
 	
-	public static void main(String[] args) throws FileNotFoundException{
-		double threshold=-100;
-		//rows correspond to blocks, columns to users
-		int [][] classifiedBlocks = new int [100][50];
-		//load schonlau et al masquerade data
-		String[][] commands = readFiles();
-		Map<String,CountP1P2>[] trainingData;
-		//train
-		trainingData=trainNaiveBayes(commands);
-		//checkClassifier(trainingData);
-		//classify
-		for(int iUser=0;iUser<50;iUser++){
-			for(int iBlock=0;iBlock<100;iBlock++){
-				String[] block =Arrays.copyOfRange(commands[iUser], 5000+iBlock*100, 5000+iBlock*100+100);
-				classifiedBlocks[iBlock][iUser] = classifyNaiveBayes(block,trainingData[iUser],threshold);
+	public static void main(String[] args) throws FileNotFoundException{	
+			//rows correspond to blocks, columns to users
+			int [][] classifiedBlocks = new int [100][50];
+			//load schonlau et al masquerade data
+			String[][] commands = readFiles();
+			Map<String,CountP1P2>[] trainingData;
+			//train
+			trainingData=trainNaiveBayes(commands);
+			//checkClassifier(trainingData);
+			//classify
+			for(double threshold=50;threshold>=-500;threshold-=10){
+			for(int iUser=0;iUser<50;iUser++){
+				for(int iBlock=0;iBlock<100;iBlock++){
+					String[] block =Arrays.copyOfRange(commands[iUser], 5000+iBlock*100, 5000+iBlock*100+100);
+					classifiedBlocks[iBlock][iUser] = classifyNaiveBayes(block,trainingData[iUser],threshold);
+				}
 			}
+			//evaluate performance
+			int [][] masquerade_summary = loadSummaryFile();
+			Statistics st = new Statistics(classifiedBlocks,masquerade_summary);
+			//System.out.println("threshold:"+threshold+ " hitrate:"+st.hitRate+" falsepositiverate:"+st.falsePositiveRate);
+			System.out.println(st.hitRate+","+st.falsePositiveRate);
 		}
-		//evaluate performance
-		int [][] masquerade_summary = loadSummaryFile();
-		Statistics st = new Statistics(classifiedBlocks,masquerade_summary);
-		System.out.println("threshold:"+threshold+ " hitrate:"+st.hitRate+" falsepositiverate:"+st.falsePositiveRate);
 	}
 
 }
