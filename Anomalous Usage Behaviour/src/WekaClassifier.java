@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.NaiveBayes;
@@ -77,17 +78,27 @@ public class WekaClassifier {
 	
 	public static void main(String[] args) throws Exception{
 		//create arff data out of the schonlau data
-		//createArffData();
-		//ArffData.createData();
 		ArffData.createDataNew();
 		
 		int [][] classifiedBlocks = new int [100][50];
 		
+		for(int j=0;j<2;j++){
+		Classifier classifier;
+		if(j==0){
+			classifier = new BayesNet(); //(91-27)
+			System.out.println("Bayes Network classifier: ");
+		}
+		else {
+			classifier = new NaiveBayes(); //(93-37)
+			System.out.println("Naive Bayes classifier: ");
+		}
+		
+		
 		for(int iUser=0;iUser<50;iUser++){
-			System.out.println("-------------User"+(iUser+1)+"---------------");
+			//System.out.println("-------------User"+(iUser+1)+"---------------");
 			// load data
 			BufferedReader reader = readDataFile("src/weka-data/User"+(iUser+1)+".arff");
-			System.out.println("Loaded arff data");
+			//System.out.println("Loaded arff data");
 			
 			//create traindata and testdata
 			Instances data = new Instances(reader); //Instances is List of types <Instance>
@@ -99,15 +110,8 @@ public class WekaClassifier {
 			testdata.setClassIndex(testdata.numAttributes()-1);
 			
 			//train Classifier
-			String[] options = weka.core.Utils.splitOptions("-R 1 2 3 20");
-			//BayesNet classifier = new BayesNet(); //(97-54)
-			//System.out.println(classifier.globalInfo());
-			//RandomForest classifier = new RandomForest();//out of memory
-			NaiveBayes classifier = new NaiveBayes(); //(97-64)
-			
-			//classifier.setOptions(options);
 			classifier.buildClassifier(traindata);
-			System.out.println("trained classfier");
+			//System.out.println("trained classfier");
 			//testing output
 			for(int i=0;i<100;i++){   
 				classifiedBlocks[i][iUser] = (int) classifier.classifyInstance(testdata.instance(i));
@@ -119,7 +123,7 @@ public class WekaClassifier {
 			}
 			
 			/*
-			// evaluate classifier and print some statistics
+			// evaluate classifier and print statistics
 			 Evaluation eval = new Evaluation(traindata);
 			 eval.evaluateModel(classifier, testdata);
 			 System.out.println(eval.toSummaryString("\nResults\n======\n", false));*/
@@ -127,6 +131,7 @@ public class WekaClassifier {
 		//evaluate performance
 		int [][] masquerade_summary = MainClass.loadSummaryFile();
 		Statistics st = new Statistics(classifiedBlocks,masquerade_summary);
-		System.out.println("threshold:unknown+"+ " hitrate:"+st.hitRate+" falsepositiverate:"+st.falsePositiveRate);
+		System.out.println("hitrate:"+st.hitRate+" falsepositiverate:"+st.falsePositiveRate);
 	 }
+	}
 }

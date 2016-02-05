@@ -157,7 +157,7 @@ public class MainClass {
 			trainingData=trainNaiveBayes(commands);
 			//checkClassifier(trainingData);
 			//classify
-			for(double threshold=50;threshold>=-500;threshold-=10){
+			double threshold=-10;
 			for(int iUser=0;iUser<50;iUser++){
 				for(int iBlock=0;iBlock<100;iBlock++){
 					String[] block =Arrays.copyOfRange(commands[iUser], 5000+iBlock*100, 5000+iBlock*100+100);
@@ -170,6 +170,5 @@ public class MainClass {
 			//System.out.println("threshold:"+threshold+ " hitrate:"+st.hitRate+" falsepositiverate:"+st.falsePositiveRate);
 			System.out.println(st.hitRate+","+st.falsePositiveRate);
 		}
-	}
 
 }
